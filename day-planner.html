@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .time-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            color: #2d3748;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .schedule-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hour-block {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .hour-block.extended {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-color: #667eea;
+        }
+
+        .hour-block.continuation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .time-label {
+            font-weight: 700;
+            color: #2d3748;
+            min-width: 80px;
+            font-size: 1.1rem;
+        }
+
+        .continuation .time-label {
+            color: white;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .task-input.hidden {
+            display: none;
+        }
+
+        .task-display {
+            flex: 1;
+            margin: 0 15px;
+            font-weight: 600;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .extend-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #718096;
+            font-style: italic;
+            padding: 40px;
+            background: rgba(247, 250, 252, 0.5);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .time-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .hour-block {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .time-label {
+                min-width: auto;
+            }
+
+            .task-input {
+                margin: 0;
+            }
+
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Day Planner</h1>
+
+        <div class="time-controls">
+            <div class="control-group">
+                <label for="start-hour">Start Hour:</label>
+                <select id="start-hour">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="end-hour">End Hour:</label>
+                <select id="end-hour">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+
+        <div class="schedule-container" id="schedule">
+            <!-- Schedule blocks will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        class DayPlanner {
+            constructor() {
+                this.tasks = {};
+                this.taskExtensions = {};
+                this.startHour = 8;
+                this.endHour = 18;
+
+                this.init();
+            }
+
+            init() {
+                this.populateHourDropdowns();
+                this.attachEventListeners();
+                this.renderSchedule();
+            }
+
+            populateHourDropdowns() {
+                const startSelect = document.getElementById('start-hour');
+                const endSelect = document.getElementById('end-hour');
+
+                for (let i = 0; i <= 23; i++) {
+                    const option1 = document.createElement('option');
+                    const option2 = document.createElement('option');
+
+                    const timeStr = this.formatHour(i);
+                    option1.value = i;
+                    option1.textContent = timeStr;
+                    option2.value = i;
+                    option2.textContent = timeStr;
+
+                    if (i === this.startHour) option1.selected = true;
+                    if (i === this.endHour) option2.selected = true;
+
+                    startSelect.appendChild(option1);
+                    endSelect.appendChild(option2);
+                }
+            }
+
+            formatHour(hour) {
+                const period = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                return `${displayHour}:00 ${period}`;
+            }
+
+            attachEventListeners() {
+                document.getElementById('start-hour').addEventListener('change', (e) => {
+                    this.startHour = parseInt(e.target.value);
+                    this.renderSchedule();
+                });
+
+                document.getElementById('end-hour').addEventListener('change', (e) => {
+                    this.endHour = parseInt(e.target.value);
+                    this.renderSchedule();
+                });
+            }
+
+            renderSchedule() {
+                const scheduleContainer = document.getElementById('schedule');
+                scheduleContainer.innerHTML = '';
+
+                if (this.startHour >= this.endHour) {
+                    scheduleContainer.innerHTML = '<div class="empty-state">Please select a valid time range (start hour must be before end hour)</div>';
+                    return;
+                }
+
+                for (let hour = this.startHour; hour < this.endHour; hour++) {
+                    const block = this.createHourBlock(hour);
+                    scheduleContainer.appendChild(block);
+                }
+            }
+
+            createHourBlock(hour) {
+                const block = document.createElement('div');
+
+                const isExtension = this.isPartOfExtendedTask(hour);
+                const isTaskStart = this.isTaskStart(hour);
+
+                if (isExtension && !isTaskStart) {
+                    block.className = 'hour-block continuation';
+
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = this.formatHour(hour);
+
+                    const taskDisplay = document.createElement('div');
+                    taskDisplay.className = 'task-display';
+                    taskDisplay.textContent = this.getExtendedTaskText(hour);
+
+                    const controls = document.createElement('div');
+                    controls.className = 'controls';
+
+                    const clearBtn = this.createClearButton(hour);
+                    controls.appendChild(clearBtn);
+
+                    if (this.shouldShowExtendButton(hour)) {
+                        const extendBtn = this.createExtendButton(hour);
+                        controls.appendChild(extendBtn);
+                    }
+
+                    block.appendChild(timeLabel);
+                    block.appendChild(taskDisplay);
+                    block.appendChild(controls);
+                } else {
+                    block.className = isExtension ? 'hour-block extended' : 'hour-block';
+
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = this.formatHour(hour);
+
+                    const taskInput = document.createElement('input');
+                    taskInput.type = 'text';
+                    taskInput.className = 'task-input';
+                    taskInput.placeholder = 'What are you planning to do?';
+                    taskInput.value = this.tasks[hour] || '';
+
+                    taskInput.addEventListener('input', (e) => {
+                        if (e.target.value) {
+                            this.tasks[hour] = e.target.value;
+                        } else {
+                            delete this.tasks[hour];
+                            this.clearExtension(hour);
+                        }
+                    });
+
+                    const controls = document.createElement('div');
+                    controls.className = 'controls';
+
+                    const clearBtn = this.createClearButton(hour);
+                    controls.appendChild(clearBtn);
+
+                    if (this.shouldShowExtendButton(hour)) {
+                        const extendBtn = this.createExtendButton(hour);
+                        controls.appendChild(extendBtn);
+                    }
+
+                    block.appendChild(timeLabel);
+                    block.appendChild(taskInput);
+                    block.appendChild(controls);
+                }
+
+                return block;
+            }
+
+            createExtendButton(hour) {
+                const btn = document.createElement('button');
+                btn.className = 'btn extend-btn';
+                btn.innerHTML = 'Extend';
+
+                btn.addEventListener('click', () => {
+                    this.extendTask(hour);
+                });
+
+                return btn;
+            }
+
+            createClearButton(hour) {
+                const btn = document.createElement('button');
+                btn.className = 'btn clear-btn';
+                btn.innerHTML = 'Clear';
+
+                btn.addEventListener('click', () => {
+                    this.clearHour(hour);
+                });
+
+                return btn;
+            }
+
+            shouldShowExtendButton(hour) {
+                const nextHour = hour + 1;
+
+                // Don't show if this is the last hour being displayed
+                if (nextHour >= this.endHour) {
+                    return false;
+                }
+
+                // Don't show if the next hour is already an extension of this task
+                const rootHour = this.findRootTask(hour);
+                if (this.taskExtensions[rootHour] && this.taskExtensions[rootHour].includes(nextHour)) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            extendTask(hour) {
+                const nextHour = hour + 1;
+
+                if (nextHour >= this.endHour) return;
+
+                // Find the root task for this hour
+                const rootHour = this.findRootTask(hour);
+                const taskText = this.tasks[rootHour];
+
+                if (!taskText) return;
+
+                if (!this.taskExtensions[rootHour]) {
+                    this.taskExtensions[rootHour] = [];
+                }
+
+                if (!this.taskExtensions[rootHour].includes(nextHour)) {
+                    this.taskExtensions[rootHour].push(nextHour);
+                }
+
+                this.renderSchedule();
+            }
+
+            findRootTask(hour) {
+                // If this hour has a direct task, it's the root
+                if (this.tasks[hour]) {
+                    return hour;
+                }
+
+                // Otherwise, find which task this hour is an extension of
+                for (const startHour of Object.keys(this.taskExtensions)) {
+                    if (this.taskExtensions[startHour].includes(hour)) {
+                        return parseInt(startHour);
+                    }
+                }
+
+                return hour;
+            }
+
+            clearHour(hour) {
+                delete this.tasks[hour];
+                this.clearExtension(hour);
+                this.renderSchedule();
+            }
+
+            clearExtension(hour) {
+                // Clear any extensions starting from this hour
+                delete this.taskExtensions[hour];
+
+                // Clear this hour from any other task's extensions
+                Object.keys(this.taskExtensions).forEach(startHour => {
+                    const extensions = this.taskExtensions[startHour];
+                    const index = extensions.indexOf(hour);
+                    if (index > -1) {
+                        extensions.splice(index, 1);
+                        if (extensions.length === 0) {
+                            delete this.taskExtensions[startHour];
+                        }
+                    }
+                });
+            }
+
+            isPartOfExtendedTask(hour) {
+                return Object.keys(this.taskExtensions).some(startHour =>
+                    this.taskExtensions[startHour].includes(hour)
+                ) || this.taskExtensions[hour];
+            }
+
+            isTaskStart(hour) {
+                return this.tasks[hour] !== undefined;
+            }
+
+            getExtendedTaskText(hour) {
+                const rootHour = this.findRootTask(hour);
+                return this.tasks[rootHour] || '';
+            }
+        }
+
+        // Initialize the day planner when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DayPlanner();
+        });
+    </script>
+</body>
+
+</html>
