@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292f;
+            background-color: #ffffff;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #b214ab;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #d1d9e0;
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #656d76;
+        }
+
+        ul {
+            margin-bottom: 16px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        a {
+            color: #b214ab;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #d1d9e0;
+            margin: 24px 0;
+        }
+
+        .tool-link {
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        .tool-description {
+            color: #656d76;
+            font-weight: normal;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>tools</h1>
+
+    <p>HTML tools built as AI experiments using LLMs.</p>
+
+    <ul>
+        <li>
+            <a href="day-planner.html" class="tool-link">Day planner</a>
+            <span class="tool-description">- Assign the days tasks to hourly blocks.</span>
+        </li>
+        <li>
+            <a href="country-tracker.html" class="tool-link">Country tracker</a>
+            <span class="tool-description">- Count how many countries you have visited.</span>
+        </li>
+    </ul>
+
+    <hr>
+
+    <p>Source code can be found on <a href="https://github.com/patrick-hurley/tools">github.com/patrick-hurley/tools</a> with details of the prompt used to create each application included within the file's history.</p>
+</body>
+</html>
